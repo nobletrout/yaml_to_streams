@@ -11,7 +11,8 @@
 
 # this does not solve the problems of timing or heartbeats or things.
 # need a parameter for a file
-(puts 'I NEED A PARAMETER'; exit(1) ) if ARGV.length != 1
+(puts 'I NEED A PARAMETER'; exit(1) ) if ARGV.length < 1
+NO_COLLAPSY = true if ARGV.length == 2
 require 'yaml'
 
 begin
@@ -27,7 +28,7 @@ buff = ''
 index = 0
 rjustval = 2
 foo.keys.each do |key|
-  if prev == key.split('_').first
+  if prev == key.split('_').first && !NO_COLLAPSY
     buff << foo[key]
     # handle last piece
     if foo.keys.last == key
