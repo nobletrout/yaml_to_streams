@@ -12,8 +12,9 @@
 # this does not solve the problems of timing or heartbeats or things.
 # need a parameter for a file
 (puts 'I NEED A PARAMETER'; exit(1) ) if ARGV.length < 1
-NO_COLLAPSY = true if ARGV.length == 2
+NO_COLLAPSY = ARGV.length == 2 ? true : false
 require 'yaml'
+require 'base64'
 
 begin
   foo = YAML.load_file(ARGV[0])
@@ -24,19 +25,17 @@ rescue => e
 end
 
 prev = foo.keys.first.split('_').first
-buff = ''
 index = 0
 rjustval = 2
-foo.keys.each do |key|
+foo.each do |key, value|
   if prev == key.split('_').first && !NO_COLLAPSY
-    buff << foo[key]
     # handle last piece
     if foo.keys.last == key
-      File.write('trans_' + index.to_s.rjust(rjustval, '0') + '_' + prev, buff)
+      File.write('trans_' + index.to_s.rjust(rjustval, '0') + '_' + prev, value)
     end
   else
-    File.write('trans_' + index.to_s.rjust(rjustval, '0') + '_' + prev, buff)
-    buff = foo[key]
+    puts "Adding new transaction index: #{index}.\r\n prev: #{prev}\r\n buff: #{Base64.encode64(value)}\r\n"
+    File.write('trans_' + index.to_s.rjust(rjustval, '0') + '_' + prev, value)
     prev = key.split('_').first
     index += 1
   end
